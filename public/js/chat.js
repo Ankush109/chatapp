@@ -1,3 +1,5 @@
+
+
 const socket =io()
 //elements
 const $messageform =document.querySelector("#message-form")
@@ -7,10 +9,28 @@ const $sendlocationbutton=document.querySelector("#sendlocation")
 const $messages =document.querySelector("#messages")
 //templates
 const messagetemplate =document.querySelector("#message-template").innerHTML
+const locationtemplate =document.querySelector("#location-template").innerHTML
+
+
+//options
+const {username,room}= Qs.parse(location.search,{
+    ignoreQueryPrefix:true
+})
 socket.on("message",(message)=>{
     console.log(message);
-    const html =Mustache.render(messagetemplate)
-    $messages.insertAdjacentElement("beforeend",html)
+    const html =Mustache.render(messagetemplate,{
+        message:message.text,
+        createdat:moment(message.createdat).format("h:mm a")
+    })
+    $messages.insertAdjacentHTML("beforeend",html)
+})
+socket.on("locationmessage",(message)=>{
+
+const html =Mustache.render(locationtemplate,{
+    url:message.url,
+    createdat:moment(message.createdat).format("+h:mm a")
+})
+$messages.insertAdjacentHTML("beforeend",html)
 })
 document.querySelector("#message-form").addEventListener("submit",(e)=>{
     e.preventDefault()
@@ -20,7 +40,7 @@ document.querySelector("#message-form").addEventListener("submit",(e)=>{
     socket.emit("sendmessage",message,(error)=>{
         $messagebutton.removeAttribute("disabled")
         $messageforminput.value=""
-        $messageforminput.focus()
+        $messageforminput.focus() 
         //enable
         if(error){
             return console.log(error);
@@ -44,3 +64,4 @@ $sendlocationbutton.addEventListener("click",()=>{
         })
     })
 })
+socket.emit("join",{username,room})
