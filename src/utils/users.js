@@ -1,65 +1,55 @@
-const users =[]
+const users = []
 
-// add user
-// remove user
-//get user
-//get user in room
-const adduser=({id,username,room})=>{
-// clean the data
-username=username.trim().toLowerCase()
-room=room.trim().toLowerCase()
-//validate the data
-if(!username || !room){
-    return {
-        error:"username and room are required"
+const addUser = ({ id, username, room }) => {
+    // Clean the data
+    username = username.trim().toLowerCase()
+    room = room.trim().toLowerCase()
+
+    // Validate the data
+    if (!username || !room) {
+        return {
+            error: 'Username and room are required!'
+        }
     }
-}
 
-
-//check for existing user
-const existinguser =users.find((user)=>{
- return user.room ===room && user.username ===username
-})
-// validate username
-if(existinguser){
-    return {
-        error:"username is in use"
-    }
-}
-//store the user
-const userop = {id,username,room}
-users.push(userop)
-return{userop}
-}
-
-const removeuser =(id)=>{
-  const index = users.findIndex((user)=>{
-      return user.id === id
-
-  })
-  if(index!==1){
-      return users.splice(index,1)[0]
-  }
-
-}
-const getuser =(id)=>{
-    return users.find((useropo)=>{
-useropo.id === id
+    // Check for existing user
+    const existingUser = users.find((user) => {
+        return user.room === room && user.username === username
     })
 
+    // Validate username
+    if (existingUser) {
+        return {
+            error: 'Username is in use!'
+        }
+    }
+
+    // Store user
+    const user = { id, username, room }
+    users.push(user)
+    return { user }
 }
-adduser({
-    id:11,
-    username:"ankfdsaush",
-    room:"america"
-})
-adduser({
-    id:22,
-    username:"ddfankush",
-    room:"america"
-})
 
+const removeUser = (id) => {
+    const index = users.findIndex((user) => user.id === id)
 
-const user =getuser(11)
-console.log(user);
+    if (index !== -1) {
+        return users.splice(index, 1)[0]
+    }
+}
 
+const getUser = (id) => {
+    return users.find((user) => user.id === id)
+}
+
+const getUsersInRoom = (room) => {
+    room = room.trim().toLowerCase()
+    return users.filter((user) => user.room === room)
+}
+
+module.exports = {
+    addUser,
+    removeUser,
+    getUser,
+    getUsersInRoom
+}
